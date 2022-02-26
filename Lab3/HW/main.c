@@ -123,5 +123,9 @@
 
 
 /* ----------------------- Mux Chips  -------------------------*/
-
+/*
+    A multiplexer is a component that selects one of two inputs based on a control signal.
+    The control signal is usually a single bit, but can be more than one bit.
+    The multiplexer is used to select the register to be used.
+*/
 /* -----------------------------------------------------------*/
