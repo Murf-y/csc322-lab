@@ -14,22 +14,23 @@
 #define OP_AND 0x05
 #define OP_OR 0x06
 #define OP_XOR 0x07
-#define OP_SL 0x08
-#define OP_SR 0x09
 
-#define OP_ADDS 0x0A
-#define OP_SUBS 0x0B
-#define OP_ANDS 0x0C
+#define OP_ADDS 0x08
+#define OP_SUBS 0x09
+#define OP_ANDS 0x0A
+
+#define OP_SL 0x0B
+#define OP_SR 0x0C
 
 
-#define OP_BZ 0x0D
-#define OP_BR 0x0E
-#define OP_BNZ 0x0F
-#define OP_CBZ 0x10
-#define OP_CBNZ 0x11
+#define OP_ADDI 0x0D
+#define OP_SUBI 0x0E
 
-#define OP_ADDI 0x12
-#define OP_SUBI 0x13
+
+#define OP_BR 0x0F
+#define OP_BZ 0x10
+#define OP_CBZ 0x11
+#define OP_CBNZ 0x12
 // **************************************************************************************************************************************************************
 
 
@@ -45,7 +46,6 @@
 #define W5 0x05
 #define W6 0x06
 #define W7 0x07
-#define WZR 0x0
 // **************************************************************************************************************************************************************
 
 
@@ -79,13 +79,16 @@
 // *************************** - B Format - **********************************************************************************************************************
 #define BZ(newPC) (OP_BZ << 12) | newPC
 #define BR(newPC) (OP_BR << 12) | newPC
-#define BNZ(newPC) (OP_BNZ << 12) | newPC
-#define CBZ(Reg1,newPC) (OP_CBZ << 12) | (Reg1 << 8) | newPC
-#define CBNZ(Reg1,newPC) (OP_CBNZ << 12) | (Reg1 << 8) | newPC
+// **************************************************************************************************************************************************************
+
+// *************************** - CB Format - **********************************************************************************************************************
+#define CBZ(Reg1,newPC)     (OP_CBZ << 12) | (newPC << 4) | Reg1
+#define CBNZ(Reg1,newPC)    (OP_CBNZ << 12) | (newPC << 4) | Reg1
 // **************************************************************************************************************************************************************
 
 
 // ***************************- I Format - **********************************************************************************************************************
+// !! We cannot put the immediate value in the middle of the instruction, we need to put it in the end !!
 #define ADDI(Reg1,Reg2,Immediate) (OP_ADDI << 12) | (Reg1 << 8) | (Reg2 << 4) | Immediate
 #define SUBI(Reg1,Reg2,Immediate) (OP_SUBI << 12) | (Reg1 << 8) | (Reg2 << 4) | Immediate
 // **************************************************************************************************************************************************************
@@ -115,14 +118,14 @@ signed short RF[64] = {
 
 };
 
+
 // Store the instrucion to be executed
+// !! We need to cast to (unsigned short) when using constants inside the instruction !!
 unsigned short IR[64] ={
     LOAD(W0,0),
-    LOAD(W1, 0),
-    LOAD(W3, 1),
-    SUBS(W2,W1,W0),
     LOAD(W1, 4),
-    BZ(3),
+    SUBS(W2, W1, W0),
+    ADDI(W0, W2, (unsigned short)5),
     HALT(),
 };
 // *************************************************************************************************************************************************************
@@ -133,9 +136,9 @@ unsigned short IR[64] ={
 unsigned short InstructionDecodeUnit(unsigned short uInstruction, unsigned short *uDest,
 unsigned short *uReg1, unsigned short *uReg2)
 {   
-    // The left most 4 bits are always the opCode
     unsigned short uOpCode = uInstruction >> 12;
-
+    
+    
     if(uOpCode == OP_HALT) return uOpCode;
 
     // D format instruction
@@ -148,21 +151,30 @@ unsigned short *uReg1, unsigned short *uReg2)
         *uReg2 = 0;        
     }
     // B format
-    else if(uOpCode == OP_BZ || uOpCode == OP_BR || uOpCode == OP_BNZ || uOpCode == OP_CBZ || uOpCode == OP_CBNZ){
+    else if(uOpCode == OP_BZ || uOpCode == OP_BR ){
         // uDest is the newPC
+        *uDest = uInstruction & 0xFF;
+        // not used
+        *uReg1 = 0;
+        // not used
+        *uReg2 = 0;        
+    }
+    else if(uOpCode == OP_CBZ || uOpCode == OP_CBNZ){
+        // uDest is the register to check
         *uDest = uInstruction & 0xF;
-        *uReg1 = (uInstruction >> 8) & 0xF;
+        // uReg1 is the newPC
+        *uReg1 = (uInstruction >> 4) & 0xFF;
         // not used
         *uReg2 = 0;        
     }
     // I-format
     else if(uOpCode == OP_ADDI || uOpCode == OP_SUBI){
-        // uDest is the imediate
-        *uDest = uInstruction & 0xF;
-        // uReg1 is the register to store the value
-        *uReg1 = (uInstruction >> 8) & 0xF;
-        // uReg2 is the register to add to it
-        *uReg2 = (uInstruction >> 4) & 0xF;
+        // uDest is register to store the result in
+        *uDest = (uInstruction >> 8) & 0xF;
+        // uReg1 is the register to be used
+        *uReg1 = (uInstruction >> 4) & 0xF;
+        // uReg2 is the immediate value
+        *uReg2 = uInstruction & 0xF;
     }
     // R format instructions
     else{
@@ -222,12 +234,12 @@ void SRW(unsigned short uReg1, unsigned short uReg2, unsigned short uDest){
 }
 
 void ADDIW(unsigned short uReg1, unsigned short uReg2, unsigned short uDest){
-    printf("Adding the value at register %d and imediate %d into register %d\n", uReg1, uDest, uReg2);
-    RF[uReg1] = RF[uReg2] + uDest;
+    printf("Adding the value at register %d and imediate %d into register %d\n", uReg1, uReg2, uDest);
+    RF[uDest] = RF[uReg1] + uReg2;
 }
 void SUBIW(unsigned short uReg1, unsigned short uReg2, unsigned short uDest){
-    printf("Subtracting the value at register %d and imediate %d into register %d\n", uReg1, uDest, uReg2);
-    RF[uReg1] = RF[uReg2] - uDest;
+    printf("Subtracting the value at register %d and imediate %d into register %d\n", uReg1, uReg2, uDest);
+    RF[uDest] = RF[uReg1] - uReg2;
 }
 // ***********************************************************************************************************************************************************
 
@@ -376,12 +388,12 @@ int main(){
             case OP_ADDI:
                 printf("An Add immediate instruction is being executed . . .\n");
                 ADDIW(uReg1, uReg2, uDest);
-                printf("The value of register %d is now %d\n", uReg1, RF[uReg1]);
+                printf("The value of register %d is now %d\n", uDest, RF[uDest]);
                 break;
             case OP_SUBI:
                 printf("An Sub immediate instruction is being executed . . .\n");
                 SUBIW(uReg1, uReg2, uDest);
-                printf("The value of register %d is now %d\n", uReg1, RF[uReg1]);
+                printf("The value of register %d is now %d\n", uDest, RF[uDest]);
                 break;
 
             
@@ -402,23 +414,12 @@ int main(){
                  // minus one because uPc is incremented after this instruction thus we should remove that incrementation
                 uPC = uDest-1;
                 break;
-            case OP_BNZ:
-             printf("An Branch if zero instruction is being executed . . .\n");
-                if(uZeroFlag == 0){
-                    printf("Branching to instruction at index %d\n", uDest);
-                     // minus one because uPc is incremented after this instruction thus we should remove that incrementation
-                    uPC = uDest - 1;
-                }
-                else{
-                    printf("Not branching\n");
-                }
-                break;
             case OP_CBZ:
                 printf("An Compare and Branch if zero instruction is being executed . . .\n");
-                if(RF[uReg1] == 0){
+                if(RF[uDest] == 0){
                     printf("Branching to instruction at index %d\n", uDest);
                      // minus one because uPc is incremented after this instruction thus we should remove that incrementation
-                    uPC = uDest - 1;
+                    uPC = uReg1 - 1;
                 }
                 else{
                     printf("Not branching\n");
@@ -426,10 +427,10 @@ int main(){
                 break;
             case OP_CBNZ:
                 printf("An Compare and Branch if not zero instruction is being executed . . .\n");
-                if(RF[uReg1] != 0){
+                if(RF[uDest] != 0){
                     printf("Branching to instruction at index %d\n", uDest);
                      // minus one because uPc is incremented after this instruction thus we should remove that incrementation
-                    uPC = uDest - 1;
+                    uPC = uReg1 - 1;
                 }
                 else{
                     printf("Not branching\n");
