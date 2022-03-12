@@ -48,11 +48,14 @@ signed short RF[64] = {
 //                                                         - Binary      (0b..)
 //                                                         - Decimal     (4096)
 unsigned long IR[64] ={
-    0b00000001000000000000,
-    LOAD(W1, 4),
-    CBZ(W1, 0x5),
-    ADDI(W2,W0, 0x3),
-    HALT(),
+    LOAD(W0, 2),         // PC = 0     
+    LOAD(W1, 5),         // PC = 1
+    LOAD(W3, 1),         // PC = 2
+    CBZ(W1, 0x5),        // PC = 3
+    ADDI(W2,W0, 0x3),    // PC = 4    
+    SUBS(W2,W2,W3),      // PC = 5
+    BZ(0x5),             // PC = 6
+    HALT(),              // PC = 7
 };
 // *************************************************************************************************************************************************************
 
@@ -259,7 +262,7 @@ int main(){
             case OP_CBZ:
                 printf("An Compare and Branch if zero instruction is being executed . . .\n");
                 if(RF[uDest] == 0){
-                    printf("Branching to instruction at index %d\n", uDest);
+                    printf("Branching to instruction at index %d\n", uReg1);
                      // minus one because uPc is incremented after this instruction thus we should remove that incrementation
                     uPC = uReg1 - 1;
                 }
@@ -270,7 +273,7 @@ int main(){
             case OP_CBNZ:
                 printf("An Compare and Branch if not zero instruction is being executed . . .\n");
                 if(RF[uDest] != 0){
-                    printf("Branching to instruction at index %d\n", uDest);
+                    printf("Branching to instruction at index %d\n", uReg1);
                      // minus one because uPc is incremented after this instruction thus we should remove that incrementation
                     uPC = uReg1 - 1;
                 }
