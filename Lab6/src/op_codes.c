@@ -1,31 +1,42 @@
 
 // ****************************** - Op Codes - *********************************************************************************************************************
-#define OP_HALT 0x00
-
-#define OP_LD 0x01
-#define OP_ST 0x02
-
-#define OP_ADD 0x03
-#define OP_SUB 0x04
-#define OP_AND 0x05
-#define OP_OR 0x06
-#define OP_XOR 0x07
-
-#define OP_ADDS 0x08
-#define OP_SUBS 0x09
-#define OP_ANDS 0x0A
-
-#define OP_SL 0x0B
-#define OP_SR 0x0C
+// !! OO_CODE will be represented by 4 bits !!
+// !! ALU_CODE will be represented by 3 bits !!
 
 
-#define OP_ADDI 0x0D
-#define OP_SUBI 0x0E
+#define OP_HALT 0x0
+
+#define OP_LD 0x1
+#define OP_ST 0x2
+
+#define OP_ALU 0x3
+
+#define ALU_ADD 0x0
+#define ALU_SUB 0x1
+#define ALU_AND 0x2
+#define ALU_OR 0x3
+#define ALU_XOR 0x4
+#define ALU_ADDS 0x5
+#define ALU_SUBS 0x6
+#define ALU_ANDS 0x7
 
 
-#define OP_BR 0x0F
-#define OP_BZ 0x10
-#define OP_CBZ 0x11
-#define OP_CBNZ 0x12
+#define OP_SL 0x4
+#define OP_SR 0x5
+
+#define OP_ADDI 0x6
+#define OP_SUBI 0x7
+
+#define OP_CBZ 0x8
+#define OP_CBNZ 0x9
+
+#define OP_BZ 0xA
+#define OP_BN  0xB
+#define OP_BR 0xC
+#define OP_BL 0xD
+
+#define OP_RET 0xE
+
+
 // **************************************************************************************************************************************************************
 
