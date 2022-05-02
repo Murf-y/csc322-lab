@@ -1,0 +1,21 @@
+|ALU
+Z <= inst6.DB_MAX_OUTPUT_PORT_TYPE
+a0 => inst4.IN0
+a0 => inst5.IN0
+a0 => inst2.IN1
+a0 => afasfaf.IN0
+a0 => asfaeg2.IN0
+c0 => inst4.IN1
+c0 => inst3.IN0
+c0 => inst101.IN0
+Sign => inst1.IN0
+a1 => inst1.IN1
+a1 => afasfaf.IN1
+a1 => asfaeg2.IN1
+RESULT <= inst14.DB_MAX_OUTPUT_PORT_TYPE
+s1 => inst13.IN0
+s1 => inst10.IN0
+s0 => inst.IN1
+s0 => inst9.IN0
+
+

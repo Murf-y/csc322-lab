@@ -1,0 +1,14 @@
+|fOUR_TO_ONE_MUX
+out <= inst5.DB_MAX_OUTPUT_PORT_TYPE
+S1 => inst6.IN0
+S1 => inst9.IN1
+S1 => inst10.IN0
+D0 => afasf.IN1
+s0 => inst7.IN0
+s0 => inst10.IN2
+s0 => qats.IN2
+D2 => inst9.IN0
+D3 => inst10.IN1
+D1 => qats.IN1
+
+

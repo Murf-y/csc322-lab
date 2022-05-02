@@ -1,0 +1,13 @@
+vendor_name = ModelSim
+source_file = 1, C:/Users/202102394/Desktop/CSC322/Adder/adder.bdf
+source_file = 1, C:/Users/202102394/Desktop/CSC322/Adder/Waveform.vwf
+source_file = 1, C:/Users/202102394/Desktop/CSC322/Adder/Waveform1.vwf
+source_file = 1, C:/Users/202102394/Desktop/CSC322/Adder/db/adder.cbx.xml
+design_name = adder
+instance = comp, \sum~output , sum~output, adder, 1
+instance = comp, \cout~output , cout~output, adder, 1
+instance = comp, \b~input , b~input, adder, 1
+instance = comp, \c~input , c~input, adder, 1
+instance = comp, \a~input , a~input, adder, 1
+instance = comp, \inst2~0 , inst2~0, adder, 1
+instance = comp, \inst6~0 , inst6~0, adder, 1

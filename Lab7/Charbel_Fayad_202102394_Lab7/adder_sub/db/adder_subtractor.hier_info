@@ -1,0 +1,31 @@
+|adder_subtractor
+sum1 <= inst7.DB_MAX_OUTPUT_PORT_TYPE
+a1 => inst100.IN0
+a1 => inst9.IN1
+a1 => inst8.IN0
+Sign => inst23.IN0
+Sign => inst1.IN0
+Sign => inst24.IN0
+Sign => inst25.IN1
+b1 => inst23.IN1
+c0 => inst4.IN0
+c0 => inst5.IN0
+c0 => inst2.IN1
+a0 => inst4.IN1
+a0 => inst3.IN0
+a0 => inst101.IN0
+b0 => inst1.IN1
+sum0 <= inst2.DB_MAX_OUTPUT_PORT_TYPE
+sum2 <= inst12.DB_MAX_OUTPUT_PORT_TYPE
+a2 => inst.IN0
+a2 => inst14.IN1
+a2 => inst13.IN0
+b2 => inst24.IN1
+sum3 <= inst18.DB_MAX_OUTPUT_PORT_TYPE
+a3 => inst17.IN0
+a3 => inst20.IN1
+a3 => inst19.IN0
+b3 => inst25.IN0
+sum4 <= inst22.DB_MAX_OUTPUT_PORT_TYPE
+
+
